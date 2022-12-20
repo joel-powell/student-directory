@@ -1,11 +1,15 @@
+require 'csv'
+
 @students = [] # an empty array accessible to all methods
 
 def print_menu
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
-  puts "9. Exit" # 9 because we'll be adding more items
+  puts [
+         "1. Input the students",
+         "2. Show the students",
+         "3. Save the list to students.csv",
+         "4. Load the list from students.csv",
+         "9. Exit" # 9 because we'll be adding more items
+       ]
 end
 
 def interactive_menu
@@ -74,33 +78,21 @@ def print_footer
 end
 
 def save_students
-  # open the file for writing
-  file = File.open("students.csv", "w")
-  # iterate over the array of students
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  CSV.open("students.csv", "wb") do |csv|
+    @students.each do |student|
+      csv << student.values
+    end
   end
-  file.close
 end
 
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
-    name, cohort = line.chomp.split(',')
+  CSV.foreach(filename) do |name, cohort|
     add_students(name, cohort)
   end
-  file.close
-end
-
-def default_file(filename = "students.csv")
-
 end
 
 def try_load_students
-  filename = ARGV.first # first argument from the command line
-  filename = "students.csv" if filename.nil? # set default value if no arguments
+  filename = ARGV.shift || "students.csv" # first argument from the command line or default
 
   if File.exist?(filename) # if it exists
     load_students(filename)
