@@ -62,9 +62,13 @@ def add_students(student)
 end
 
 def show_students
-  print_header
-  print_student_list
-  print_footer
+  if @students.empty?
+    print_empty
+  else
+    print_header
+    print_student_list
+    print_footer
+  end
 end
 
 def print_header
@@ -83,6 +87,11 @@ def print_footer
   puts "-------------"
 end
 
+def print_empty
+  puts "We have no students"
+  puts "-------------"
+end
+
 def enter_filename
   puts "Please enter a CSV filename"
   $stdin.gets.chomp
@@ -91,6 +100,7 @@ end
 def save_students
   filename = enter_filename
   save_to_file(filename)
+  puts "Students saved to #{filename}"
 end
 
 def load_students
@@ -110,21 +120,25 @@ def try_load_students(filename)
     puts "Loaded #{student_count} from #{filename}"
     puts "Now we have #{@students.count} students"
   else
-    puts "Sorry, #{filename} doesn't exist, would you like to create it? [y/n]"
-    loop do
-      case $stdin.gets.chomp
-      when "y"
-        File.new(filename, "w")
-        puts "File created!"
-        break
-      when "n"
-        puts "File not created"
-        break
-      else
-        puts "Please enter valid response"
-      end
-    end
+    create_file(filename)
+  end
+end
 
+def create_file(filename)
+  puts "Sorry, #{filename} doesn't exist, would you like to create it? [y/n]"
+  loop do
+    response = $stdin.gets.chomp
+    case response
+    when "y"
+      File.new(filename, "w")
+      puts "File created!"
+      break
+    when "n"
+      puts "File not created"
+      break
+    else
+      puts "Please enter valid response"
+    end
   end
 end
 
