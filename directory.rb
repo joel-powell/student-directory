@@ -37,18 +37,21 @@ def process(selection)
 end
 
 def input_students
-  puts "Please enter the names of the students"
+  puts "Please enter the names of the students followed by their cohort (month)"
   puts "To finish, just hit return twice"
-  # get the first name
-  name = $stdin.gets.chomp
-  cohort = :november
-  student = [name, cohort]
-  # while the name is not empty, repeat this code
-  until name.empty?
+
+  loop do
+    puts "Enter name"
+    name = $stdin.gets.chomp.capitalize
+    break if name.empty?
+
+    puts "Enter cohort"
+    cohort = $stdin.gets.chomp.downcase.to_sym
+    break if cohort.empty?
+
+    student = [name, cohort]
     add_students(student)
     puts "Now we have #{@students.count} students"
-    # get another name from the user
-    name = $stdin.gets.chomp
   end
 end
 
@@ -70,8 +73,8 @@ def print_header
 end
 
 def print_student_list
-  @students.each do |student|
-    puts "#{student[:name]} (#{student[:cohort]} cohort)"
+  @students.each_with_index do |student, index|
+    puts "#{index + 1}. #{student[:name]} (#{student[:cohort]} cohort)"
   end
 end
 
@@ -107,8 +110,21 @@ def try_load_students(filename)
     puts "Loaded #{student_count} from #{filename}"
     puts "Now we have #{@students.count} students"
   else
-    puts "Sorry, #{filename} doesn't exist."
-    exit
+    puts "Sorry, #{filename} doesn't exist, would you like to create it? [y/n]"
+    loop do
+      case $stdin.gets.chomp
+      when "y"
+        File.new(filename, "w")
+        puts "File created!"
+        break
+      when "n"
+        puts "File not created"
+        break
+      else
+        puts "Please enter valid response"
+      end
+    end
+
   end
 end
 
