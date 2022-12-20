@@ -21,12 +21,12 @@ def process(selection)
     input_students
   when "2"
     show_students
-  when "9"
-    exit # this will cause the program to terminate
   when "3"
     save_students
   when "4"
     load_students
+  when "9"
+    exit # terminate program
   else
     puts "I don't know what you meant, try again"
   end
@@ -37,14 +37,19 @@ def input_students
   puts "To finish, just hit return twice"
   # get the first name
   name = STDIN.gets.chomp
+  cohort = :november
   # while the name is not empty, repeat this code
-  until name.empty? do
-    # add the student hash to the array
-    @students << { name: name, cohort: :november }
+  until name.empty?
+    add_students(name, cohort)
     puts "Now we have #{@students.count} students"
     # get another name from the user
     name = STDIN.gets.chomp
   end
+end
+
+def add_students(name, cohort)
+  # add the student hash to the array
+  @students << { name: name, cohort: cohort }
 end
 
 def show_students
@@ -84,15 +89,16 @@ def load_students(filename = "students.csv")
   file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort = line.chomp.split(',')
-    @students << {name: name, cohort: cohort.to_sym}
+    add_students(name, cohort)
   end
   file.close
 end
 
 def try_load_students
-  filename = ARGV.first# first argument from the command line
+  filename = ARGV.first # first argument from the command line
   return if filename.nil? # get out of the method if it isn't given
-  if File.exists?(filename) # if it exists
+
+  if File.exist?(filename) # if it exists
     load_students(filename)
     puts "Loaded #{@students.count} from #{filename}"
   else # if it doesn't exist
