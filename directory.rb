@@ -144,16 +144,12 @@ end
 
 def save_to_file(filename)
   CSV.open(filename, "wb") do |csv|
-    @students.each do |student|
-      csv << student.values
-    end
+    @students.each { csv << _1.values }
   end
 end
 
 def load_from_file(filename)
-  CSV.foreach(filename) do |row|
-    add_students(row)
-  end
+  CSV.foreach(filename) { add_students(_1) }
 end
 
 start_load_students
